@@ -15,7 +15,7 @@ from libs.mainFun import *
 from concurrent.futures import ThreadPoolExecutor
 from flask import  request, Blueprint, session, redirect, url_for, render_template,make_response
 
-executor = ThreadPoolExecutor(2)
+executor = ThreadPoolExecutor(10)
 
 user = Blueprint('user', __name__, url_prefix='/user', template_folder='../templates', static_folder='../static')
 
@@ -36,7 +36,7 @@ def login():
                 session.permanent = True
                 session['islogin'] = 1
                 session['username'] = username
-                return json_response(200,message="login sucess")
+                return json_response(200, message="login sucess")
             else:
                 return json_response(500, message="username or password is wrong.")
     except Exception as e:
@@ -64,4 +64,9 @@ def add_url():
 	# 后台扫描js
 	executor.submit(jsscan.scanjs, url)
 	return 'ok{}'.format(url)
+
+# 所有扫描任务站点
+@user.route('/site/list', methods=['GET'])
+def listsite():
+    return "ok"
 

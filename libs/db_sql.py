@@ -17,3 +17,8 @@ class Users(db.Model):
     username = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255), unique=True)
 
+# 查询扫描任务 分页
+def query_site_list(query='', pageNm=1, pageSize=10):
+    if pageSize < 500:
+        index = (pageNm - 1) * pageSize
+        db.query(Sites.)
