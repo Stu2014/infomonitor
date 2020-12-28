@@ -13,14 +13,15 @@ from libs.db_sql import *
 from libs.db_sql import db
 from libs.mainFun import *
 from concurrent.futures import ThreadPoolExecutor
-from flask import  request, Blueprint, session, redirect, url_for, render_template,make_response
+from flask import request, Blueprint, session, redirect, url_for, render_template, make_response
 
 executor = ThreadPoolExecutor(10)
 
 user = Blueprint('user', __name__, url_prefix='/user', template_folder='../templates', static_folder='../static')
 
+
 # 登录接口
-@user.route('/login', methods=['GET','POST'])
+@user.route('/login', methods=['GET', 'POST'])
 def login():
     try:
         if request.method == 'GET':
@@ -57,16 +58,23 @@ def logout():
     session["islogin"] = 0
     return json_response(200, message="logout sucess")
 
+
 # 添加网站接口 添加后开始扫描
-@user.route('/add_url', methods=['GET'])
-def add_url():
-	url = request.args['url']
-	# 后台扫描js
-	executor.submit(jsscan.scanjs, url)
-	return 'ok{}'.format(url)
+@user.route('/addurl', methods=['GET'])
+@check_login
+def addurl():
+    url = request.args.get('url')
+    # 后台扫描js
+    executor.submit(jsscan.scanjs, url)
+    return json_response(200, message="add sucess")
+
 
 # 所有扫描任务站点
 @user.route('/site/list', methods=['GET'])
+@check_login
 def listsite():
-    return "ok"
-
+    query = request.args.get('query', default='')
+    pageNm = request.args.get('pageNm', type=int, default=1)
+    pageSize = request.args.get('pageSize', type=int, default=5)
+    sites = query_site_list(query=query, pageNm=pageNm, pageSize=pageSize)
+    return json_response(data=sites, code=200)

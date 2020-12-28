@@ -7,8 +7,10 @@
 # js 扫描模块 url参数
 
 
+from libs.db_sql import *
+
 def scanjs(url):
     # 实现，通过第一遍扫描js 入库，然后定期扫描js，如果出现新的域名出现js，标记为告警
     # 更新状态 开始扫描
-    print("add url suss")
-    return url
+    add_site(url, 0)
+    return True
