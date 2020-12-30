@@ -3,7 +3,7 @@
 # @Time    : 2020/12/23 4:48 下午
 # @Author  : Pickmea.
 # @Email   : h4ckst5@qq.com
-# @File    : mainFun.py
+# @File    : main.py
 
 import functools
 from flask import make_response, jsonify, redirect, url_for, request, session

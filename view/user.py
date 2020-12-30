@@ -11,7 +11,7 @@ from module import jsscan
 from libs.log import logger
 from libs.db_sql import *
 from libs.db_sql import db
-from libs.mainFun import *
+from libs.main import *
 from concurrent.futures import ThreadPoolExecutor
 from flask import request, Blueprint, session, redirect, url_for, render_template, make_response
 
@@ -60,11 +60,17 @@ def logout():
 
 
 # 添加网站接口 添加后开始扫描
-@user.route('/addurl', methods=['GET'])
+@user.route('/site/addurl', methods=['GET'])
 @check_login
 def addurl():
     url = request.args.get('url')
     # 后台扫描js
+    # 201 目标重复
+    # logger.info(query_site_list(url)['targetlist'])
+    if query_site_list(url)['targetlist']:
+        code = 201
+        mess = 'add fail'
+        return json_response(code, message=mess)
     executor.submit(jsscan.scanjs, url)
     return json_response(200, message="add sucess")
 
@@ -78,3 +84,15 @@ def listsite():
     pageSize = request.args.get('pageSize', type=int, default=5)
     sites = query_site_list(query=query, pageNm=pageNm, pageSize=pageSize)
     return json_response(data=sites, code=200)
+
+
+# 所有任务js站点
+@user.route('/site/jslist', methods=['GET'])
+@check_login
+def jslist():
+    query = request.args.get('query', default='')
+    pageNm = request.args.get('pageNm', type=int, default=1)
+    pageSize = request.args.get('pageSize', type=int, default=5)
+    sites = query_js_list(query=query, pageNm=pageNm, pageSize=pageSize)
+    return json_response(data=sites, code=200)
+
